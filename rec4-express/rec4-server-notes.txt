@@ -1,0 +1,174 @@
+Plan for this recitation:
+- Server-side recap + details
+- Hello world with Express; MVC with Express
+- Interacting with MongoDB
+
+Server-side recap
+
+1. Client-server provides modularity
+  - Client and server communicate over predefined interface and protocol
+  - In our case, protocol is HTTP
+  - Interface is the set of _routes_ that your server exposes. More on this later
+  - General picture
+    - Client sends server an HTTP request
+    - Server sends back HTTP response
+    - Contents of the response are displayed in browser
+  - What are the contents of an HTTP request/response?
+    - Headers
+    - Body
+  - For a request
+    - Headers: method, path, HTTP version, cache, cookies, user agent (identifies the client browser) etc.
+    - Body: query strings (the ?a=1&b=2 part of the URL); other data payloads
+    - e.g.: GET / HTTP/1.1
+            Cookie: KEY=longstringofvaluehere
+  - For a response
+    - Headers: status code, set cookies, etc.
+    - Body: the payload to display (typically HTML, CSS, Javascript, etc)
+  - Important thing to remember is that the body of the response is typically interpreted immediately by the browser.
+
+2. HTTP is stateless
+  - In the absence of any other data stores, doing the same request over and over will do the same thing
+  - But we introduce state in 3 places:
+    - On the client: cookies
+      - Server gives instruction to set
+      - Limited in length by browser
+    - On the server: sessions
+      - Typically client identifies themselves with a short cookie, server uses cookie content as key to session
+    - Connected to the server: databases
+      - e.g. Mongo. more on this later
+  - HTTP provides us with limited set of "methods"
+    - GET, PUT, POST, DELETE
+    - We pair a method with a "route" (described later) to tell the server what we want
+    - Subtle point: While HTTP provides us with these 4 methods, most browsers only support GET and POST
+      - Solution is to use POST, in the request body include a _method: "PUT" or _method: "DELETE"
+      - Express framework should auto detect this. If not, will have to handle as POST requests
+      - But remember: NO state modification over GET!
+
+3. MVC in Web Programming
+  - Draw diagram:
+    - Request hits controller
+    - Controller goes to model for data (link between model and database as well)
+    - Controller sends data to view for rendering
+    - View takes a bunch of data, renders the UI (typically HTML)
+    - Result of view rendering sent back to the client
+  - "Fat model/skinny controller"
+    - Common in frameworks where MVC is strict (e.g Rails)
+    - Idea is to do data fetching + processing in model. Controller should simply be a _small_ piece in the middle that connects the model with the view.
+    - CAUTION: Express does not enforce these ideas; it's possible to write your entire app in one function!
+
+4. Express Hello World
+  - What is Express?
+    - Lightweight framework built above Node.js inspired by other lightweight frameworks like Flask or Sinatra
+    - NOT a heavy framework like Rails/Meteor/Django. Enforces very few requirements; makes it very possible to write ugly code
+    - Under constant development. Sometimes SO answers will be outdated. Good thing is it's not very hard to figure out what the framework is doing, unlike Rails.
+  - Let's build Hello World!
+    $ express -e helloworld
+    $ cd helloworld && npm install
+    $ ./bin/www
+    (visit localhost:3000 in a browser -- note the logs in the node console)
+    (CTRL + C to kill)
+  - Look at app.js (demo recitation file with comments)
+    - Require modules (new JS way of creating modules)
+    - Middleware
+      - Code which goes in between the request coming in and the request being passed to the framework
+    - Most important middleware - ROUTING
+      - As mentioned before, ROUTING associates HTTP METHOD and PATH --> server action
+      - app.use('/PATH', ROUTER_NAME)
+  - Inside the router
+    - router.HTTP_VERB('/REST_OF_PATH', function(req, res))
+    - Example: in index.js -- router.get('/', function(req, res){ ... })
+      - This handles a GET request to /
+      - Note request data automagically goes into the callback
+      - Anything you do to the res argument also gets sent with the response
+  - Ordering of routes
+    - In app.js, goes into the router first matched by app.use(...)
+      - For app.use -- does NOT matter what the HTTP method is
+      - Useful for separating the "big parts" of your app (e.g. main, users, schedules, whatever)
+    - Within each router, also goes to the first route handler
+      - Has to match path AND method
+    - So in general, paths are matched top to bottom
+      - Want to declare routes from general to specific
+        - e.g. Everything will match '/', so if you put that first, nothing else will matter
+
+5. Controller and View
+  - Router doubles as "controller"
+    - Responsible for fetching data, and sending the data off to the views
+    - See the line
+      router.get('/', function(req, res) {
+        res.render('index', { title: 'Express' });
+      });
+    - res.render is a call to a view. We send the view an object with a single 'title' field
+  - Views are dumb -- take data, and render it
+    - A "template" -- HTML with "holes" in it, which are plugged by the data sent to the view
+    - Fields in the object sent to the view automatically appear in the view
+      - e.g. <%= title %>
+      - Note how it basically looks like HTML!
+    - Views should just display data given to it
+      - Keep logic to a minimum!
+        - Ugly to embed in HTML
+        - Separation of concerns
+        - Some things, like generating a list of things, is okay. But generally more complex logic is bad and should be handled by the controller.
+    - What about model?
+      - Don't worry for now; will talk about next week
+
+6. MongoDB and NoSQL
+  - In contrast to traditional "relational" databases, Mongo gives unstructured data
+  - "Default" database in the Node.js community
+  - MongoDB doesn't enforce a "schema" or structure, but you must keep it straight
+    - Otherwise you will get objects out of the database and not know what you can do with them
+  - Example: say you have a bunch of users. Then you decide to keep track of user emails. You can simply start appending an 'email' field for every new user.
+    - There is an inconsistency. New users have the email field; old users do not.
+    - Mongo will not complain. But you may run into cases where keys aren't defined on objects, etc.  - Structure of Mongo
+    - Collections
+    - Collections contain documents
+    - Query:
+      db.users.insert({
+        name: "charles",
+        email: "cliu2014@mit.edu",
+        ...
+        group: [1,2,3]
+      })
+    - The object passed to insert is the _document_, which goes into a "bag" of documents in the collection
+      - Why bag? Not a set -- can repeat
+  - Playing around with Mongo commands
+    $ mongod -- opens the server
+    (in another terminal)
+    $ mongo
+    > db.test.find({})
+    { "_id" : ObjectId("5423a5e5182b12d2e6536fe3"), "name" : "charles" }
+    > db.test.insert({'name':'charles2'})
+    WriteResult({ "nInserted" : 1 })
+    (CTRL + C to quit)
+  - Basic commands - find, insert, delete, update (can Google for syntax, more next week)
+
+7. Node + Mongo
+  - Today: Monk
+    - Not as powerful as others (e.g. Mongoose)
+    - Will talk about Mongoose next week
+  - var db = require('monk')('localhost:27017/<db_name>')
+    var users = db.get('usercollection')
+  - Then you can do things like
+    users.find(...); users.insert(...)
+  - NOTE: in the mongo shell, 'db' is alias to the db_name
+    - So if my db name is 'test', when I do db.test.find(...), I am looking in the 'test' collection of the 'test' database.
+  - Mongo will automatically take care of creating new collections if you write to a nonexistent one
+
+8. User Authentication!
+  - Create a /users route to handle all user-related things
+  - Use session state to store user's ID (not quite secure, fix later)
+    - On every request, check session for user ID. If valid, they're logged in.
+    - How to know if user is logged in? Modify req.currentUser.
+    - Remember to check req.currentUser on EVERY route!
+  - General structure of routes
+    - GET /users/new -- form to create a new user
+    - GET /users/login -- login form
+    - POST /users (with 'username' and 'password' as fields in the request body) -- perform the action of creating a new uesr
+    - POST /login -- perform username/password checks
+    - POST /logout -- remove the req.currentUser object and reset the session
+  - Use redirects to your advantage! Simply do req.redirect(NEW_ROUTE)
+    - Example: if already logged in (req.currentUser exists); redirect away from GET /users/new, GET /users/login, POST routes (except logout), etc.
+    - If login fails, redirect to /users/login with error message
+    - If user logs out, redirect to /users/login
+    - etc...
+  - It's okay if this doesn't make sense now. Implementing authentication is a great way to learn a new framework and uses all of the parts we've talked about -- routes, databases, session state, etc.
+
