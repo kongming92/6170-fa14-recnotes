@@ -1,0 +1,135 @@
+What is CSS?
+
+Recall:
+- HTML: content and structure of page
+- CSS: STYLING of page
+- Javascript: behavior of page
+
+General structure of styling declarations
+  property_name: value;
+  property_name: value;
+
+Standard "display" values:
+1. inline <span></span>
+  - flows with text content
+  - will not clear the line and move to the next
+  - ignore top/bottom margins, width and height settings
+
+2. block <div></div>
+  - will expand naturally to fill parent on width (unless explicity set)
+  - height will expand to fit its children (unless explictly set)
+  - can set margins and padding
+  - ignores vertical align (!!)
+
+3. inline-block
+  - creates a box
+  - puts the block "as an inline element"
+
+3 ways to apply styles:
+
+1. Inline style
+  <h1 style="color:blue;margin-left:30px;">Heading</h1>
+
+  What are the pros/cons of this approach?
+    +: rule takes highest precedence
+    -: no separation of concerns; can't apply rule to many elements
+
+2. Style tag in HTML header
+  <head>
+    ...
+    <style>
+      h1 {
+        color: blue;
+        margin-left: 30px;
+      }
+    </style>
+    ...
+  </head>
+
+3. External stylesheet
+  <head>
+    ...
+    <link rel="stylesheet" type="text/css" href="my-stylesheet.css" />
+    ...
+  </head>
+
+Selectors
+
+1. Tag name, e.g.,
+  p {
+    color:blue;
+  }
+
+2. Class name, e.g.,
+  <div class="header">Header Content Here</div>
+  .header {
+    font-size: 18px;
+  }
+
+3. ID name, e.g.,
+  <div id="header">Header Content Here</div>
+  #header {
+    font-size: 18px;
+  }
+  Remember, only one element per ID!
+
+Combining selectors
+
+1. Comma separated - applies styling to each individual stle
+  p, .nav, #button { ... }
+
+2. Space separated - any elements selected by selector #2 that is a descendant of #1
+  .nav span { ... } will select all <span> that are descendants of .nav
+
+3. > separated - instead of any descendant, must be direct descendant
+
+4. Stacked - elements that satisfy all selectors
+  h1.center.large#header-bar - selects h1 elements that have class center and large, AND id header-bar
+
+5. Pseudo-selectors - :hover, :first-child, :last-child, :visited, etc
+
+Specificity
+Inline > IDs > classes > Elements/pseudo-elements
+Remember try to make your styles reusable - don't rely on IDs too much
+
+DRY - don't repeat yourself
+
+Bad:
+.btn.btn-danger {
+  font-size: 16px;
+  background-color: red;
+}
+
+.btn.btn-success {
+  font-size: 16px;
+  background-color: green;
+}
+
+Better:
+.btn {
+  font-size: 16px;
+}
+
+.btn-danger {
+  background-color: red;
+}
+
+.btn-success {
+  background-color: green;
+}
+
+!important tag gives HIGHEST precedence
+
+Box Model
+Margin | Border | Padding | Content 
+box-sizing: border-box
+
+LESS/SASS, Bootstrap, etc. - mention
+
+Example of cascading
+TODOs:
+1. When hovering over a group of letters:
+  - Change the cursor to a hand
+  - Highlight the A's one color, the B's another
+2. When click on a group of letters:
+  - Highlight in that color ALL of those letters only within that table

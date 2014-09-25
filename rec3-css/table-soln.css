@@ -1,0 +1,49 @@
+table {
+  margin: 10px;
+  border-collapse: collapse;
+}
+
+table, th, td {
+  border: 1px solid black;
+}
+
+div {
+  margin: 4px;
+  padding: 4px;
+  display: inline-block;
+}
+
+div:hover {
+  cursor: pointer;
+  color: white;
+}
+
+/*
+Replaced by rules below
+.a:hover {
+  background-color: red;
+}
+
+.b:hover {
+  background-color: blue;
+}
+
+.c:hover {
+  background-color: green;
+}
+*/
+
+table.active-a .a, .a:hover {
+  background-color: red;
+  color: white;
+}
+
+table.active-b .b, .b:hover {
+  background-color: blue;
+  color: white;
+}
+
+table.active-c .c, .c:hover {
+  background-color: green;
+  color: white;
+}

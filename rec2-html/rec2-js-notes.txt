@@ -1,0 +1,108 @@
+Javascript idiom for "objects" -- useful in P1
+
+Recall closures:
+var f = function() {
+  var x = 1;
+  inc = function() {
+    return ++x;
+  };
+};
+
+Use closures to simulate objects
+- internal state
+- provide an interface to manipulate state
+  - but no direct access to the state
+- instead of just getting a function, we want to get an "object" and call functions on it.
+
+var Counter = function() {
+  var i = 0;
+  var self = {};
+  self.inc = function() {
+    return ++i;
+  };
+  return self;
+};
+
+What is the type of Counter?
+What is the type of Counter()?
+
+See closure2.js for more examples
+
+----------
+
+What is "unobtrusive" Javascript?
+
+Example 1: js1.html
+When we click on the text, an alert pops up.
+What's wrong with this example?
+- embedded a code string in html
+- not a function; not reusable
+  - what if we had many such lines of text?
+- what is the namespace of the string of code in the element? hard to tell.
+- in general: 
+  - html specifies content, structure
+  - css specifies styling
+  - javascript specifies behavior
+  - To obtain modularity, we don't want these things to be mixed with each other
+
+Example 2: js2.html
+What's wrong here?
+Open chrome debugger -- cannot read property 'addEventListener' of null
+document.getElementById of nonexistent id returns null
+Reason is script gets executed before rest of html is loaded.
+
+Example 3: js3.html
+Note the use of the window.onload anonymous function. 
+The line containing window.onload is executed immediately, before the DOM is loaded.
+But the function assigned to window.onload isn't executed until the page has been loaded, so the <p> with id=click exists now.
+
+jQuery
+jQuery is a library around Javascript.
+
+Pros:
+- much cleaner syntax. Notice how with vanilla JS it take a lot of boilerplate code
+- cross-browser compatibility. This used to be much more of an issue -- different browsers respond to certain functions in subtlely different ways
+- utilities - exposes some of the good idioms of JS
+
+Cons:
+- Not many from the development side
+- Must include another library -- some sites are concerned with load time.
+
+How to use jQuery? Just add a set of script tags before your own javascript
+
+jQuery syntax:
+- most functions preceded by $. $ is alias for 'jQuery'
+- Use CSS selector directly to select a 'jQuery array' of elements
+  - $('body'), $('.row'), $('#select') etc.
+  - Think of these calls as calling a constructor to create a jQuery object: e.g. jquery('.row')
+- jQuery functions don't have the same names as their DOM counterparts
+
+One note: if more than one element matches selector, looks like you have an array in the console (e.g. $('p'))
+- but it doesn't really behave like an array. Be careful!
+
+Common jQuery functions (demo in interview-me site)
+- DOM manipulation:
+  - class manipulation: addClass, removeClass, toggleClass
+  - modify contents of an element: html, text, val
+  - modify the DOM structure: append, before, after, prepend
+  - change styling: css, hide, show
+- Traversing the DOM
+  - each
+  - children, parents, siblings
+  - first, next, prev, last
+- Most functions return the jQuery object back, so can chain function calls
+
+Example 4: js4.html
+Notes:
+- First line of JS is the jquery library
+- Separated the entire javascript into a separate file
+- Note use of class and id selectors
+- Note creation of element using $('<p />') and chaining of functions
+- Will the newly created <p>'s be clickable?
+
+Example 5:
+Problem is fixed! -- bind click handler to every element upon creation.
+
+Example 6:
+Another way to fix the problem
+Attach listener to $(document), then filter by selector. Since $(document) never changes, our added elements are fine.

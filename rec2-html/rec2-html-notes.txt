@@ -1,0 +1,101 @@
+HTML Tags and DOM
+
+Hello world example - things to mention
+<!DOCTYPE html>
+- describes the kind of document. In our case, html5
+
+Structure of most html pages is <html>, then <head> and <body> tags
+Note tree-like structure of the document
+
+Examine web.mit.edu
+Hover over elements in inspector, view them shaded in the page
+
+Many different html tags, only about a dozen or so are common.
+
+Tags to note:
+
+In general, all elements can take class and id
+- useful for defining both the styling (CSS - next week) and the behavior/interaction (Javascript)
+- class attribute - think of classes as a set of attributes and behaviors that can be applied to a variety of elements to make them look/behave in a similar way
+  - examples: hidden, large, header, navbar
+  - in Bootstrap: row, col-md-4, warning, danger, etc.
+- id attribute - a way to target a _single_ specific element
+  - generally not recommended for styling; you want your styling to be reusable
+
+<div> 
+- for now, think of it as a "container" that gives your page logical structure
+- will talk about this a lot more when we look at CSS
+
+<h1>
+- header, comes with some default styling
+
+<img>
+- takes a src attribute - when <img> tag is loaded, browser makes request to src
+
+<a>
+- anchor tag
+- provides a link to another page
+- can also provide a link to another part of the page, or provide something to click on (more about this when we talk about Javascript)
+
+lists:
+<ul> vs. <ol>
+
+<form>
+- built in method to collect a bunch of data and send it to the server
+- action attribute - specify what URL to submit the form to
+- method - GET or POST (HTTP verb -- more about this in lecture later)
+- forms have many <input> fields
+
+<input> attributes:
+- name: what the value of the input becomes in the request to the server
+- type: what kind of input? e.g. text, password, checkbox, radio, etc.
+  - note: html5 provides many additions to this:
+    https://developer.mozilla.org/en-US/docs/Web/HTML/Element/Input
+  - why use these types instead of text?
+    - better UI: for example, number will give you buttons to inc/dec, email will give you a keyboard on the iPhone more suited for inputting email addresses
+    - form validation: many browsers will automatically inform you of inputs that don't conform to the type
+- other attributes: placeholder, autofocus, disabled, novalidate, etc.
+- more info: http://diveintohtml5.info/forms.html
+
+Do a people search on the MIT homepage
+Look at network inspector -- note structure of query string, how it relates to the <input> tag
+
+The DOM API
+- DOM is actually an API! -- gives the programmer a way to interact with the elements displayed on the screen
+- Today we will look at using the DOM API to do some page manipulations
+- Then introduce jQuery -- a library that makes your life a lot easier, unifies behavior across platforms
+
+Example 1: DOM traversal (do on MIT site)
+var anchor_tags = document.getElementsByTagName('a');
+for (var i = 0; i < anchor_tags.length; ++i) {
+  try {
+    anchor_tags[i].style.color = 'red';
+  } catch (err) {
+    console.log(err);
+  }
+}
+
+Notes:
+document - refers to the DOM element of the page
+getElementsByTagName - DOM function
+tag.style.color = 'red' -- style is a field of DOM object, set its color to 'red'
+
+Example 2: DOM Element swap (do on MIT site)
+var swapElements = function(obj1, obj2) {
+  // create marker element and insert it where obj1 is
+  var temp = document.createElement("div");
+  obj1.parentNode.insertBefore(temp, obj1);
+  // move obj1 to right before obj2
+  obj2.parentNode.insertBefore(obj1, obj2);
+  // move obj2 to right before where obj1 used to be
+  temp.parentNode.insertBefore(obj2, temp);
+  // remove temporary marker node
+  temp.parentNode.removeChild(temp);
+}
+
+var nav_left = document.getElementById('main_nav_left');
+var nav_right = document.getElementById('newsAndevents');
+swapElements(nav_left, nav_right);
+
+Note getElementById -- should only have one element per id!
+

@@ -1,0 +1,53 @@
+h1 {
+  color: green !important;
+  margin-left: 50px;
+}
+
+/* Below are examples of selectors */
+
+/* Use classname */
+.selected { ... }
+
+/* Use ID */
+#submit-button { ... }
+
+/* Select elements that match at least one */
+/* In this case, selects all p, .center, and #submit-button */
+p, .center, #sub { ... }
+
+/* Select any descendant */
+.nav span { ... }
+
+/* Select direct descendant */
+.nav > span { ... }
+
+/* Select elements that match ALL */
+h1.center.large#header-bar { ... }
+
+/* Pseudo-selectors */
+.top-link:active { ... }
+.top-link:hover { ... }
+div:first-child { ... }
+
+.btn.btn-danger {
+  font-size: 16px;
+  background-color: red;
+}
+
+.btn.btn-success {
+  font-size: 16px;
+  background-color: green;
+}
+
+/* Better solution */
+.btn {
+  font-size: 16px;
+}
+
+.btn-danger {
+  background-color: red;
+}
+
+.btn-success {
+  background-color: green;
+}
